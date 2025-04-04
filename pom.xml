@@ -1,0 +1,68 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>net.ptidej</groupId>
+    <artifactId>all-ptidej</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  
+  <groupId>net.ptidej.glass</groupId>
+  <artifactId>glass-padl</artifactId>
+  <version>0.4</version>
+  <name>GLASS PADL Model Extractor</name>
+  
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+	<dependency>
+		<groupId>org.junit.jupiter</groupId>
+		<artifactId>junit-jupiter-engine</artifactId>
+		<version>5.9.1</version>
+		<scope>test</scope>
+	</dependency>
+    
+    <dependency>
+      <groupId>net.ptidej.glass</groupId>
+      <artifactId>glass-core</artifactId>
+      <version>0.4</version>
+    </dependency>
+    
+    <!-- 
+    <dependency>
+	  <groupId>org.eclipse.platform</groupId>
+  	  <artifactId>org.eclipse.equinox.common</artifactId>
+  	  <version>3.18.0</version>
+	</dependency>
+    -->
+    
+	<dependency>
+	  <groupId>net.ptidej.padl</groupId>
+	  <artifactId>padl-core</artifactId>
+	  <version>1.0.0</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>net.ptidej.padl</groupId>
+	  <artifactId>padl-creator-javafile-eclipse</artifactId>
+	  <version>1.0.0</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>net.ptidej.padl</groupId>
+	  <artifactId>padl-generator</artifactId>
+	  <version>1.0.0</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>net.ptidej.cpl</groupId>
+		<artifactId>cpl-core</artifactId>
+		<version>1.0.0</version>
+	</dependency>
+  </dependencies>
+  
+</project>
