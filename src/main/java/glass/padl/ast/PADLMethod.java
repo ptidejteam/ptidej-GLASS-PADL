@@ -124,4 +124,9 @@ public class PADLMethod implements IMethod{
 		return this.getSignature();
 	}
 
+	@Override
+	public boolean isPublic() {
+		return this.padlMethod.isPublic();
+	}
+
 }

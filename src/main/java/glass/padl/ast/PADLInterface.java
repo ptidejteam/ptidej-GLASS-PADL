@@ -2,9 +2,12 @@ package glass.padl.ast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import glass.ast.IMethod;
 import glass.ast.IType;
 import padl.kernel.IFirstClassEntity;
 import padl.kernel.IInterface;
@@ -51,6 +54,21 @@ public class PADLInterface extends PADLType{
 		subTypes.addAll(Arrays.asList(super.getAllSubtypes()));
 		subTypes.addAll(Arrays.asList(this.getImplementingClasses()));
 		return subTypes.toArray(new IType[0]);
+	}
+
+	@Override
+	public void changeSuperclass(IType newSuperclass) {
+		// do nothing, should throw exception in the future?
+	}
+
+	@Override
+	public IMethod[] getMethods() {
+		Set<IMethod> allMethods = new HashSet<IMethod>();
+		allMethods.addAll(Arrays.asList(this.getLocalMethods()));
+		for (IType superType : this.getAllSupertypes()) { //All our super types should be interfaces
+			allMethods.addAll(Arrays.asList(superType.getMethods()));
+		}
+		return (IMethod[]) allMethods.toArray();
 	}
 
 }

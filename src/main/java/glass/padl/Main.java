@@ -41,9 +41,8 @@ public class Main
 
 		
     	
-        String filePath_test = "C:\\Users\\notuk\\eclipse-workspace\\TestFeature1\\src";
-        //String filePath = "C:\\Users\\notuk\\git\\ptidej-Ptidej\\GLASS Feature Discovery\\featurediscovery\\qualitativeEvaluation\\data\\input projects\\javawebmail-0.7\\src";
-        String projectName = "javawebmail";
+        String filePath_test = null;
+        String projectName = null;
         IProject project = new PADLProject(filePath_test);
         
         

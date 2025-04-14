@@ -2,12 +2,6 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   
-  <parent>
-    <groupId>net.ptidej</groupId>
-    <artifactId>all-ptidej</artifactId>
-    <version>1.0.0</version>
-  </parent>
-  
   <groupId>net.ptidej.glass</groupId>
   <artifactId>glass-padl</artifactId>
   <version>0.4</version>
@@ -20,9 +14,9 @@
 
   <dependencies>
 	<dependency>
-		<groupId>org.junit.jupiter</groupId>
-		<artifactId>junit-jupiter-engine</artifactId>
-		<version>5.9.1</version>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>4.13.2</version>
 		<scope>test</scope>
 	</dependency>
     

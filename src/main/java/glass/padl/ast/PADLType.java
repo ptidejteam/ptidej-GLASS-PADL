@@ -4,18 +4,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import glass.ast.IField;
 import glass.ast.IMethod;
 import glass.ast.IType;
 import padl.kernel.IFirstClassEntity;
 
-abstract public class PADLType implements IType {
+public abstract class PADLType implements IType {
 
 	protected IFirstClassEntity padlType;
 	private Collection<IField> fields;
 	private Collection <IMethod> methods;
 	protected PADLProject padlProject;
+	protected IType[] superTypes;
+	protected IType[] subTypes;
+	
 
 	public PADLType(IFirstClassEntity padlType, PADLProject padlProject) {
 		this.padlType = padlType;
@@ -43,9 +50,7 @@ abstract public class PADLType implements IType {
 	abstract public boolean isInterface();
 
 	@Override
-	public IMethod[] getMethods() {
-		return this.methods.toArray(new IMethod[this.methods.size()]);
-	}
+	public abstract IMethod[] getMethods();
 
 	@Override
 	public IField[] getFields() {
@@ -70,7 +75,7 @@ abstract public class PADLType implements IType {
 
 	@Override
 	public String[][] resolveType(String typeName) {
-		return null;	// shouldn't be used since PADL already takes care of the resolution
+		return null;	// shouldn't be used since PADL already takes care of the resolution, should probably throw exception
 	}
 
 	@Override
@@ -136,6 +141,79 @@ abstract public class PADLType implements IType {
 	@Override
 	public String toString() {
 		return this.getElementName();
+	}
+
+	@Override
+	public String getPackage() {
+		String qualifiedName = this.getFullyQualifiedName();
+		String[] splitPackages = qualifiedName.split(".");
+		StringBuilder packageName = new StringBuilder();
+		for (int i=0; i<splitPackages.length-1; i++) {
+			packageName.append(splitPackages[i]+".");
+		}
+		return packageName.toString();
+	}
+
+	@Override
+	public void addSuperInterface(IType superInterface) {
+		this.addToArray(superTypes, superInterface);
+	}
+
+	/*
+	@Override
+	public void changeSuperclass(IType newSuperclass) {
+		// do nothing, should throw an exception in the future
+	}
+	*/
+
+	@Override
+	public void addSubType(IType subType) {
+		this.addToArray(subTypes, subType);
+	}
+
+	@Override
+	public boolean hasSamePublicInterface(IType comparedType) {
+		Set<String> publicComparedMethods = Stream.of(comparedType.getMethods()).
+				filter(m -> m.isPublic()).
+				map(m -> m.getSignature()).
+				collect(Collectors.toSet());
+		
+		String[] publicLocalMethods = Stream.of(this.getMethods()).
+				filter(m -> m.isPublic()).
+				map(m -> m.getSignature()).
+				toArray(String[]::new);
+		
+		int nbPublicMethods = publicLocalMethods.length;
+		
+		if (nbPublicMethods != publicComparedMethods.size()) {
+			return false;
+		}
+		
+		int i = 0;
+		while (i<nbPublicMethods && publicComparedMethods.contains(publicLocalMethods[i])) {
+			i++;
+		}
+		
+		return i == nbPublicMethods;
+		
+	}
+	
+	private IType[] addToArray(IType[] typeArray, IType newType) {
+		IType[] newArray = null;
+		if (typeArray == null) {
+			newArray = new IType[1];
+			newArray[0] = newType;
+		} else {
+			newArray = new IType[typeArray.length + 1];
+			newArray[0] = newType;
+			System.arraycopy(typeArray, 0, newArray, 1, newArray.length);
+		}
+		return newArray;
+	}
+
+	@Override
+	public IMethod[] getLocalMethods() {
+		return (IMethod[]) this.methods.toArray();
 	}
 
 }
