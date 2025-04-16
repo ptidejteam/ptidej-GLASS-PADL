@@ -49,7 +49,7 @@ public class ASTVisitor implements IWalker {
 	private Collection<IType> definedTypes = new ArrayList<IType>();
 	private Collection<IType> ghostTypes = new ArrayList<IType>();
 	private Stack<PADLType> typeStack;
-
+	
 	public ASTVisitor(PADLProject padlProject) {
 		this.padlProject = padlProject;
 		this.typeStack = new Stack<PADLType>();
@@ -218,7 +218,8 @@ public class ASTVisitor implements IWalker {
 
 	@Override
 	public void reset() {
-		definedTypes = new ArrayList<IType>();
+		this.definedTypes = new ArrayList<IType>();
+		this.ghostTypes = new ArrayList<IType>();
 	}
 
 	@Override
@@ -288,5 +289,6 @@ public class ASTVisitor implements IWalker {
 	public Collection<IType> getGhostTypes() {
 		return ghostTypes;
 	}
+	
 
 }

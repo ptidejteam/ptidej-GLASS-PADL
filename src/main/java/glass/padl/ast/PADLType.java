@@ -146,11 +146,12 @@ public abstract class PADLType implements IType {
 	@Override
 	public String getPackage() {
 		String qualifiedName = this.getFullyQualifiedName();
-		String[] splitPackages = qualifiedName.split(".");
+		String[] splitPackages = qualifiedName.split("\\.");
 		StringBuilder packageName = new StringBuilder();
-		for (int i=0; i<splitPackages.length-1; i++) {
+		for (int i=0; i<splitPackages.length-2; i++) {
 			packageName.append(splitPackages[i]+".");
 		}
+		packageName.append(splitPackages[splitPackages.length-2]);
 		return packageName.toString();
 	}
 
