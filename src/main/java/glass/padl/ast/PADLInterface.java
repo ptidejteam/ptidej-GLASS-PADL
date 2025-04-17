@@ -15,6 +15,7 @@ import padl.kernel.IInterface;
 public class PADLInterface extends PADLType{
 	
 	private padl.kernel.IInterface padlInterface;
+	private IType[] implClasses;
 
 	public PADLInterface(IInterface padlType, PADLProject padlProject) {
 		super(padlType, padlProject);
@@ -28,7 +29,14 @@ public class PADLInterface extends PADLType{
 	
 	@Override
 	public IType[] getImplementingClasses() {
-		ArrayList<IType> implClasses = new ArrayList<IType>();
+		if (!this.isInitialized) {
+			this.init();
+		}
+		return this.implClasses;
+	}
+	
+	public void initImplementingClasses() {
+		ArrayList<IType> implClassesList = new ArrayList<IType>();
 		final Iterator iterator = this.padlInterface.getIteratorOnImplementingClasses();
 		while (iterator.hasNext()) {
 			IFirstClassEntity entity = (IFirstClassEntity) iterator.next();
@@ -36,24 +44,24 @@ public class PADLInterface extends PADLType{
 			String entityName = splitPackages[splitPackages.length-1];
 			IType typeEntity = this.padlProject.findType(entityName);
 			if (typeEntity != null) {
-				implClasses.add(typeEntity);
-				implClasses.addAll(Arrays.asList(typeEntity.getAllSubtypes()));
+				implClassesList.add(typeEntity);
+				implClassesList.addAll(Arrays.asList(typeEntity.getAllSubtypes()));
 			}
 		}
 		
-		IType[] res = new IType[implClasses.size()];
-		for (int i = 0; i<implClasses.size(); i++) {
-			res[i] = implClasses.get(i);
+		this.implClasses = new IType[implClassesList.size()];
+		for (int i = 0; i<implClassesList.size(); i++) {
+			this.implClasses[i] = implClassesList.get(i);
 		}
-		return res;
 	}
 	
 	@Override
-	public IType[] getAllSubtypes() {
-		List<IType> subTypes = new ArrayList<IType>();
-		subTypes.addAll(Arrays.asList(super.getAllSubtypes()));
-		subTypes.addAll(Arrays.asList(this.getImplementingClasses()));
-		return subTypes.toArray(new IType[0]);
+	public void initSubtypes() {
+		this.initImplementingClasses();
+		List<IType> subTypesList = new ArrayList<IType>();
+		subTypesList.addAll(Arrays.asList(super.getAllSubtypes()));
+		subTypesList.addAll(Arrays.asList(this.implClasses));
+		this.subTypes = subTypesList.toArray(new IType[0]);
 	}
 
 	@Override

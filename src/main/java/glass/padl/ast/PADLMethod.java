@@ -12,7 +12,7 @@ public class PADLMethod implements IMethod{
 	
 	private padl.kernel.IMethod padlMethod;
 	private String signature;
-	private int nbParameters;
+	private int nbParameters = 0;
 	
 	
 	public PADLMethod(padl.kernel.IMethod padlMethod) {
@@ -21,6 +21,7 @@ public class PADLMethod implements IMethod{
 	}
 	
 	private String createSignature() {
+		this.nbParameters = 0;
 		StringBuffer signature = new StringBuffer();
 		signature.append(Modifier.toString(this.padlMethod.getVisibility()));
 		if (this.padlMethod.getVisibility() != 0) {
@@ -67,7 +68,9 @@ public class PADLMethod implements IMethod{
 	}
 	
 	public String getSimpleSignature() {
+		this.nbParameters = 0;
 		StringBuffer signature = new StringBuffer();
+		// can add visibility if needed
 		signature.append(this.padlMethod.getReturnType());
 		signature.append(' ');
 		signature.append(this.padlMethod.getName());
@@ -103,7 +106,7 @@ public class PADLMethod implements IMethod{
 		final Iterator iterator = this.padlMethod.getIteratorOnConstituents(IParameter.class);
 		while (iterator.hasNext()) {
 			IParameter parameter = (IParameter) iterator.next();
-			parameters[i] = String.valueOf(parameter.getTypeName());
+			parameters[i] = this.getParameterStrings(parameter);
 			i++;
 		}
 		return parameters;
@@ -127,6 +130,11 @@ public class PADLMethod implements IMethod{
 	@Override
 	public boolean isPublic() {
 		return this.padlMethod.isPublic();
+	}
+	
+	@Override
+	public boolean isProtected() {
+		return this.padlMethod.isProtected();
 	}
 
 }

@@ -22,6 +22,7 @@ public abstract class PADLType implements IType {
 	protected PADLProject padlProject;
 	protected IType[] superTypes;
 	protected IType[] subTypes;
+	protected boolean isInitialized = false;
 	
 
 	public PADLType(IFirstClassEntity padlType, PADLProject padlProject) {
@@ -37,6 +38,12 @@ public abstract class PADLType implements IType {
 
 	public void addMethod(IMethod method) {
 		this.methods.add(method);
+	}
+	
+	public void init() {
+		this.initSubtypes();
+		this.initSupertypes();
+		this.isInitialized = true;
 	}
 
 
@@ -78,10 +85,8 @@ public abstract class PADLType implements IType {
 		return null;	// shouldn't be used since PADL already takes care of the resolution, should probably throw exception
 	}
 
-	@Override
-	public IType[] getAllSubtypes() {
-
-		ArrayList<IType> subTypes = new ArrayList<IType>();
+	public void initSubtypes() {
+		ArrayList<IType> subTypesList = new ArrayList<IType>();
 		final Iterator iterator = this.padlType
 				.getIteratorOnInheritingEntities();
 		while (iterator.hasNext()) {
@@ -90,21 +95,27 @@ public abstract class PADLType implements IType {
 			String entityName = splitPackages[splitPackages.length - 1];
 			IType typeEntity = this.padlProject.findType(entityName);
 			if (typeEntity != null) {
-				subTypes.add(typeEntity);
-				subTypes.addAll(Arrays.asList(typeEntity.getAllSubtypes()));
+				subTypesList.add(typeEntity);
+				subTypesList.addAll(Arrays.asList(typeEntity.getAllSubtypes()));
 			}
 		}
 
-		IType[] res = new IType[subTypes.size()];
-		for (int i = 0; i < subTypes.size(); i++) {
-			res[i] = subTypes.get(i);
+		this.subTypes = new IType[subTypesList.size()];
+		for (int i = 0; i < subTypesList.size(); i++) {
+			this.subTypes[i] = subTypesList.get(i);
 		}
-		return res;
 	}
-
+	
 	@Override
-	public IType[] getAllSupertypes() {
-		ArrayList<IType> superTypes = new ArrayList<IType>();
+	public IType[] getAllSubtypes() {
+		if (!this.isInitialized) {
+			this.init();
+		}
+		return this.subTypes;
+	}
+	
+	public void initSupertypes() {
+		ArrayList<IType> superTypesList = new ArrayList<IType>();
 		final Iterator iterator = this.padlType
 				.getIteratorOnInheritedEntities();
 		while (iterator.hasNext()) {
@@ -114,21 +125,28 @@ public abstract class PADLType implements IType {
 			IType typeEntity = this.padlProject
 					.findType(entityName);
 			if (typeEntity != null) {
-				superTypes.add(typeEntity);
-				superTypes.addAll(Arrays.asList(typeEntity.getAllSupertypes()));
+				superTypesList.add(typeEntity);
+				superTypesList.addAll(Arrays.asList(typeEntity.getAllSupertypes()));
 			}
 		}
 
-		IType[] res = new IType[superTypes.size()];
-		for (int i = 0; i < superTypes.size(); i++) {
-			res[i] = superTypes.get(i);
+		this.superTypes = new IType[superTypesList.size()];
+		for (int i = 0; i < superTypesList.size(); i++) {
+			this.superTypes[i] = superTypesList.get(i);
 		}
-		return res;
+	}
+
+	@Override
+	public IType[] getAllSupertypes() {
+		if (!this.isInitialized) {
+			this.init();
+		}
+		return this.superTypes;
 	}
 
 	@Override
 	public IType[] getImplementingClasses() {
-		return null; // only used for interfaces
+		return null; // only used for interfaces, should throw exception
 	}
 	
 
@@ -214,7 +232,7 @@ public abstract class PADLType implements IType {
 
 	@Override
 	public IMethod[] getLocalMethods() {
-		return (IMethod[]) this.methods.toArray();
+		return this.methods.toArray(new IMethod[this.methods.size()]);
 	}
 
 }

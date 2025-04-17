@@ -14,6 +14,8 @@ import padl.kernel.IFirstClassEntity;
 
 
 public class PADLClass extends PADLType{
+	
+	private IType[] superInterfaces;
 
 	public PADLClass(IClass padlType, PADLProject padlProject) {
 		super(padlType, padlProject);
@@ -24,9 +26,9 @@ public class PADLClass extends PADLType{
 		return false;
 	}
 	
-	private IType[] getAllSuperInterfaces() {
+	public void initSuperInterfaces() {
 		IClass padlClass = (IClass) padlType;
-		ArrayList<IType> superInterfaces = new ArrayList<IType>();
+		ArrayList<IType> superInterfacesList = new ArrayList<IType>();
 		final Iterator iterator = padlClass.getIteratorOnImplementedInterfaces();
 		while (iterator.hasNext()) {
 			IFirstClassEntity entity = (IFirstClassEntity) iterator.next();
@@ -35,24 +37,31 @@ public class PADLClass extends PADLType{
 			IType typeEntity = this.padlProject
 					.findType(entityName);
 			if (typeEntity != null) {
-				superInterfaces.add(typeEntity);
-				superInterfaces.addAll(Arrays.asList(typeEntity.getAllSupertypes()));
+				superInterfacesList.add(typeEntity);
+				superInterfacesList.addAll(Arrays.asList(typeEntity.getAllSupertypes()));
 			}
 		}
-		IType[] res = new IType[superInterfaces.size()];
-		for (int i = 0; i < superInterfaces.size(); i++) {
-			res[i] = superInterfaces.get(i);
+		this.superInterfaces = new IType[superInterfacesList.size()];
+		for (int i = 0; i < superInterfacesList.size(); i++) {
+			this.superInterfaces[i] = superInterfacesList.get(i);
 		}
-		return res;
 	}
 	
-	@Override
-	public IType[] getAllSupertypes() {
-		List<IType> superTypes = new ArrayList<IType>();
-		superTypes.addAll(Arrays.asList(this.getAllSuperInterfaces()));
-		superTypes.addAll(Arrays.asList(super.getAllSupertypes()));
-		return superTypes.toArray(new IType[0]);
+	public IType[] getAllSuperInterfaces() {
+		if(!this.isInitialized) {
+			this.init();
+		}
+		return this.superInterfaces;
 	}
+	
+	public void initSuperTypes() {
+		this.initSuperInterfaces();
+		List<IType> superTypesList = new ArrayList<IType>();
+		superTypesList.addAll(Arrays.asList(this.getAllSuperInterfaces()));
+		superTypesList.addAll(Arrays.asList(this.superTypes));
+		this.superTypes =  superTypesList.toArray(new IType[0]);
+	}
+	
 	
 	@Override
 	public void changeSuperclass(IType newSuperclass) {
@@ -77,7 +86,7 @@ public class PADLClass extends PADLType{
 			}
 		}
 		for (IMethod method : superTypeMethods) {
-			if (method.isPublic() && !method.isConstructor()) {
+			if ((method.isPublic() || method.isProtected()) && !method.isConstructor()) {
 				allMethods.add(method);
 			}
 		}
