@@ -29,4 +29,34 @@ public class PADLGhost extends PADLType{
 		return null;
 	}
 
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public IType[] getAllSubtypes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IType[] getAllSupertypes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addSuperInterface(IType superInterface) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addSubType(IType subType) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

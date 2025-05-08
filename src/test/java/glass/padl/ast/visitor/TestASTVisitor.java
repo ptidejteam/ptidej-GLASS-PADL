@@ -1,18 +1,10 @@
 package glass.padl.ast.visitor;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-public class TestASTVisitor extends TestSuite{
-	
-	public static Test suite() {
-		final TestASTVisitor suite = new TestASTVisitor();
-		
-		suite.addTestSuite(TestSimpleClass.class);
-		
-		return suite;
-	}
-	
-	public TestASTVisitor() {
-	}
+@RunWith(Suite.class)
+@SuiteClasses({TestSimpleClass.class, TestHierarchy.class})
+public class TestASTVisitor{
 }

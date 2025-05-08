@@ -3,7 +3,9 @@ package glass.padl.ast;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -20,8 +22,7 @@ public abstract class PADLType implements IType {
 	private Collection<IField> fields;
 	private Collection <IMethod> methods;
 	protected PADLProject padlProject;
-	protected IType[] superTypes;
-	protected IType[] subTypes;
+	private IType superClass;
 	protected boolean isInitialized = false;
 	
 
@@ -40,11 +41,7 @@ public abstract class PADLType implements IType {
 		this.methods.add(method);
 	}
 	
-	public void init() {
-		this.initSubtypes();
-		this.initSupertypes();
-		this.isInitialized = true;
-	}
+	public abstract void init();
 
 
 	@Override
@@ -84,64 +81,15 @@ public abstract class PADLType implements IType {
 	public String[][] resolveType(String typeName) {
 		return null;	// shouldn't be used since PADL already takes care of the resolution, should probably throw exception
 	}
-
-	public void initSubtypes() {
-		ArrayList<IType> subTypesList = new ArrayList<IType>();
-		final Iterator iterator = this.padlType
-				.getIteratorOnInheritingEntities();
-		while (iterator.hasNext()) {
-			IFirstClassEntity entity = (IFirstClassEntity) iterator.next();
-			String[] splitPackages = entity.getDisplayPath().split("\\|");
-			String entityName = splitPackages[splitPackages.length - 1];
-			IType typeEntity = this.padlProject.findType(entityName);
-			if (typeEntity != null) {
-				subTypesList.add(typeEntity);
-				subTypesList.addAll(Arrays.asList(typeEntity.getAllSubtypes()));
-			}
-		}
-
-		this.subTypes = new IType[subTypesList.size()];
-		for (int i = 0; i < subTypesList.size(); i++) {
-			this.subTypes[i] = subTypesList.get(i);
-		}
-	}
 	
 	@Override
-	public IType[] getAllSubtypes() {
-		if (!this.isInitialized) {
-			this.init();
-		}
-		return this.subTypes;
-	}
-	
-	public void initSupertypes() {
-		ArrayList<IType> superTypesList = new ArrayList<IType>();
-		final Iterator iterator = this.padlType
-				.getIteratorOnInheritedEntities();
-		while (iterator.hasNext()) {
-			IFirstClassEntity entity = (IFirstClassEntity) iterator.next();
-			String[] splitPackages = entity.getDisplayPath().split("\\|");
-			String entityName = splitPackages[splitPackages.length - 1];
-			IType typeEntity = this.padlProject
-					.findType(entityName);
-			if (typeEntity != null) {
-				superTypesList.add(typeEntity);
-				superTypesList.addAll(Arrays.asList(typeEntity.getAllSupertypes()));
-			}
-		}
-
-		this.superTypes = new IType[superTypesList.size()];
-		for (int i = 0; i < superTypesList.size(); i++) {
-			this.superTypes[i] = superTypesList.get(i);
-		}
-	}
+	public abstract IType[] getAllSubtypes();
 
 	@Override
-	public IType[] getAllSupertypes() {
-		if (!this.isInitialized) {
-			this.init();
-		}
-		return this.superTypes;
+	public abstract IType[] getAllSupertypes();
+	
+	public IType getSuperClass() {
+		return this.superClass;
 	}
 
 	@Override
@@ -174,21 +122,17 @@ public abstract class PADLType implements IType {
 	}
 
 	@Override
-	public void addSuperInterface(IType superInterface) {
-		this.addToArray(superTypes, superInterface);
-	}
+	public abstract void addSuperInterface(IType superInterface);
 
-	/*
+	
 	@Override
-	public void changeSuperclass(IType newSuperclass) {
-		// do nothing, should throw an exception in the future
+	public void changeSuperclass(IType newSuperClass) {
+		this.superClass = newSuperClass;
 	}
-	*/
+	
 
 	@Override
-	public void addSubType(IType subType) {
-		this.addToArray(subTypes, subType);
-	}
+	public abstract void addSubType(IType subType);
 
 	@Override
 	public boolean hasSamePublicInterface(IType comparedType) {
@@ -217,7 +161,7 @@ public abstract class PADLType implements IType {
 		
 	}
 	
-	private IType[] addToArray(IType[] typeArray, IType newType) {
+	protected IType[] addToArray(IType[] typeArray, IType newType) {
 		IType[] newArray = null;
 		if (typeArray == null) {
 			newArray = new IType[1];

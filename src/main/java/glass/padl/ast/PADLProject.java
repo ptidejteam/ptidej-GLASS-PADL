@@ -1,5 +1,7 @@
 package glass.padl.ast;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -79,8 +81,33 @@ public class PADLProject implements IProject{
 		this.definedTypes = walker.getDefinedTypes();
 		this.ghostTypes = walker.getGhostTypes();
 		
+		if (this.definedTypes.size() == 0) {
+			File folder = new File(filePath);
+			File[] listOfFiles = folder.listFiles();
+			String[] filePaths = new String[listOfFiles.length];
+			for (int i=0; i<listOfFiles.length; i++) {
+				filePaths[i] = filePath + "\\" + listOfFiles[i].getName();
+				System.out.println(filePaths[i]);
+			}
+			this.model = ModelGenerator.generateModelFromClassFilesDirectories("", filePaths);
+			
+			final ASTVisitor walker2 = new ASTVisitor(this);
+			model.walk(walker2);
+			
+			this.definedTypes = walker2.getDefinedTypes();
+			this.ghostTypes = walker2.getGhostTypes();
+		}
+		this.initTypes();
 	}
 	
+	private void initTypes() {
+		for (IType type : this.definedTypes) {
+			((PADLType) type).init();
+		}
+		for (IType type : this.ghostTypes) {
+			((PADLType) type).init();
+		}
+	}
 	
 	private String getFullyQualifiedName(IFirstClassEntity type) { // Problem : incorrect package
 		String[] splitPackages = type.getDisplayPath().split("\\|");
@@ -94,7 +121,8 @@ public class PADLProject implements IProject{
 
 	@Override
 	public IType findType(String typeName) {
-		return Stream.concat(definedTypes.stream(), ghostTypes.stream())
+		// For now we don't consider ghost types
+		return definedTypes.stream()
 				.filter(t -> t.getFullyQualifiedName().equals(typeName))
 				.findFirst()
 				.orElse(null);

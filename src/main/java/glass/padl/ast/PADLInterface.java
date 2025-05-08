@@ -15,7 +15,9 @@ import padl.kernel.IInterface;
 public class PADLInterface extends PADLType{
 	
 	private padl.kernel.IInterface padlInterface;
-	private IType[] implClasses;
+	private IType[] directImplClasses;
+	private IType[] directSubInterfaces;
+	private IType[] directSuperInterfaces;
 
 	public PADLInterface(IInterface padlType, PADLProject padlProject) {
 		super(padlType, padlProject);
@@ -29,10 +31,7 @@ public class PADLInterface extends PADLType{
 	
 	@Override
 	public IType[] getImplementingClasses() {
-		if (!this.isInitialized) {
-			this.init();
-		}
-		return this.implClasses;
+		return this.directImplClasses;
 	}
 	
 	public void initImplementingClasses() {
@@ -45,24 +44,15 @@ public class PADLInterface extends PADLType{
 			IType typeEntity = this.padlProject.findType(entityName);
 			if (typeEntity != null) {
 				implClassesList.add(typeEntity);
-				implClassesList.addAll(Arrays.asList(typeEntity.getAllSubtypes()));
 			}
 		}
 		
-		this.implClasses = new IType[implClassesList.size()];
+		this.directImplClasses = new IType[implClassesList.size()];
 		for (int i = 0; i<implClassesList.size(); i++) {
-			this.implClasses[i] = implClassesList.get(i);
+			this.directImplClasses[i] = implClassesList.get(i);
 		}
 	}
 	
-	@Override
-	public void initSubtypes() {
-		this.initImplementingClasses();
-		List<IType> subTypesList = new ArrayList<IType>();
-		subTypesList.addAll(Arrays.asList(super.getAllSubtypes()));
-		subTypesList.addAll(Arrays.asList(this.implClasses));
-		this.subTypes = subTypesList.toArray(new IType[0]);
-	}
 
 	@Override
 	public void changeSuperclass(IType newSuperclass) {
@@ -77,6 +67,118 @@ public class PADLInterface extends PADLType{
 			allMethods.addAll(Arrays.asList(superType.getMethods()));
 		}
 		return (IMethod[]) allMethods.toArray();
+	}
+	
+	private void initDirectSuperInterfaces() {
+		List<IType> superTypesList = new ArrayList<IType>();
+		final Iterator iterator = this.padlType
+				.getIteratorOnInheritedEntities();
+		while (iterator.hasNext()) {
+			IFirstClassEntity entity = (IFirstClassEntity) iterator.next();
+			String[] splitPackages = entity.getDisplayPath().split("\\|");
+			String entityName = splitPackages[splitPackages.length - 1];
+			IType typeEntity = this.padlProject.findType(entityName);
+			if (typeEntity != null) {
+				superTypesList.add(typeEntity);
+			}
+		}
+		
+		this.directSuperInterfaces = new IType[superTypesList.size()];
+		for (int i = 0; i < superTypesList.size(); i++) {
+			this.directSuperInterfaces[i] = superTypesList.get(i);
+		}
+	}
+	
+	private void initDirectSubInterfaces() {
+		List<IType> subInterfacesList = new ArrayList<IType>();
+		final Iterator iterator = this.padlType
+				.getIteratorOnInheritingEntities();
+		while (iterator.hasNext()) {
+			IFirstClassEntity entity = (IFirstClassEntity) iterator.next();
+			String[] splitPackages = entity.getDisplayPath().split("\\|");
+			String entityName = splitPackages[splitPackages.length - 1];
+			IType typeEntity = this.padlProject.findType(entityName);
+			if (typeEntity != null) {
+				subInterfacesList.add(typeEntity);
+			}
+		}
+
+		this.directSubInterfaces = new IType[subInterfacesList.size()];
+		for (int i = 0; i < subInterfacesList.size(); i++) {
+			this.directSubInterfaces[i] = subInterfacesList.get(i);
+		}
+	}
+	
+	private void initDirectImplClasses() {
+		List<IType> implClassesList = new ArrayList<IType>();
+		final Iterator iterator = this.padlInterface
+				.getIteratorOnImplementingClasses();
+		while (iterator.hasNext()) {
+			IFirstClassEntity entity = (IFirstClassEntity) iterator.next();
+			String[] splitPackages = entity.getDisplayPath().split("\\|");
+			String entityName = splitPackages[splitPackages.length - 1];
+			IType typeEntity = this.padlProject.findType(entityName);
+			if (typeEntity != null) {
+				implClassesList.add(typeEntity);
+			}
+		}
+		
+		this.directImplClasses = new IType[implClassesList.size()];
+		for (int i = 0; i < implClassesList.size(); i++) {
+			this.directImplClasses[i] = implClassesList.get(i);
+		}
+	}
+
+	@Override
+	public void init() {
+		this.initDirectImplClasses();
+		this.initDirectSubInterfaces();
+		this.initDirectSuperInterfaces();
+	}
+
+	@Override
+	public IType[] getAllSubtypes() {
+		Set<IType> allSubTypes = new HashSet<IType>(Arrays.asList(this.directImplClasses));
+		allSubTypes.addAll(Arrays.asList(this.directSubInterfaces));
+		for (IType implClass : this.directImplClasses) {
+			IType[] implSubTypes = implClass.getAllSubtypes();
+			if (implSubTypes != null) {
+				allSubTypes.addAll(Arrays.asList(implSubTypes));	
+			}
+		}
+		for (IType subInterface : this.directSubInterfaces) {
+			IType[] recSubTypes = subInterface.getAllSubtypes();
+			if (recSubTypes != null) {
+				allSubTypes.addAll(Arrays.asList(recSubTypes));	
+			}
+		}
+		return allSubTypes.toArray(new IType[allSubTypes.size()]);
+	}
+
+	@Override
+	public IType[] getAllSupertypes() {
+		Set<IType> allSuperTypes = new HashSet<IType>(Arrays.asList(this.directSuperInterfaces));
+		for (IType superInterface : this.directSuperInterfaces) {
+			IType[] recSuperTypes = superInterface.getAllSupertypes();
+			if (recSuperTypes != null) {
+				allSuperTypes.addAll(Arrays.asList(recSuperTypes));
+			}
+		}
+		return allSuperTypes.toArray(new IType[allSuperTypes.size()]);
+	}
+
+	@Override
+	public void addSuperInterface(IType superInterface) {
+		this.addToArray(this.directSuperInterfaces, superInterface);
+	}
+
+	@Override
+	public void addSubType(IType subType) {
+		if (subType.isInterface()) {
+			this.addToArray(this.directSubInterfaces, subType);
+		} else {
+			this.addToArray(this.directImplClasses, subType);
+		}
 	}
 
 }
