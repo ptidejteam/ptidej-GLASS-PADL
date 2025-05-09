@@ -41,16 +41,16 @@ public class PADLClass extends PADLType{
 	public IMethod[] getMethods() {
 		Set<IMethod> allMethods = new HashSet<IMethod>();
 		allMethods.addAll(Arrays.asList(this.getLocalMethods()));
-		Set<IMethod> superTypeMethods = null;
 		// we already get the methods from the super interfaces in the local methods
-		superTypeMethods = new HashSet<IMethod>(Arrays.asList(this.getSuperClass().getMethods()));
-		
-		for (IMethod method : superTypeMethods) {
-			if ((method.isPublic() || method.isProtected()) && !method.isConstructor()) {
-				allMethods.add(method);
+		IType superClass = this.getSuperClass();
+		if (superClass != null) {
+			for (IMethod method : superClass.getMethods()) {
+				if ((method.isPublic() || method.isProtected()) && !method.isConstructor()) {
+					allMethods.add(method);
+				}
 			}
 		}
-		return (IMethod[]) allMethods.toArray();
+		return allMethods.toArray(new IMethod[allMethods.size()]);
 	}
 	
 	private void initDirectSuperClass() {

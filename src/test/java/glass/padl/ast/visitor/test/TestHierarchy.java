@@ -1,4 +1,4 @@
-package glass.padl.ast.visitor;
+package glass.padl.ast.visitor.test;
 
 import java.util.Collection;
 
@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import glass.ast.IMethod;
 import glass.ast.IType;
 import glass.padl.ast.PADLProject;
 
@@ -52,5 +53,19 @@ public class TestHierarchy{
 		
 		assertEquals(1, subInterface.getAllSupertypes().length);
 		assertEquals(3, subInterface.getAllSubtypes().length);
+	}
+	
+	@Test
+	public void testMethods() {
+		IType topClass = typeArray[6];
+		IMethod[] allMethods = topClass.getMethods();
+		IMethod[] localMethods = topClass.getLocalMethods();
+		assertTrue(allMethods.length == localMethods.length);
+		
+		IType subInterface = typeArray[2];
+		IMethod[] allMethodsInt = subInterface.getMethods();
+		IMethod[] localMethodsInt = subInterface.getLocalMethods();
+		assertEquals(2, allMethodsInt.length);
+		assertEquals(1, localMethodsInt.length);
 	}
 }

@@ -1,4 +1,4 @@
-package glass.padl.ast.visitor;
+package glass.padl.ast.visitor.test;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

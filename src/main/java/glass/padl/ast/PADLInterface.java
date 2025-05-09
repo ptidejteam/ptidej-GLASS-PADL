@@ -64,9 +64,12 @@ public class PADLInterface extends PADLType{
 		Set<IMethod> allMethods = new HashSet<IMethod>();
 		allMethods.addAll(Arrays.asList(this.getLocalMethods()));
 		for (IType superType : this.getAllSupertypes()) { //All our super types should be interfaces
-			allMethods.addAll(Arrays.asList(superType.getMethods()));
+			IMethod[] superTypeMethods = superType.getMethods();
+			if (superTypeMethods != null) {
+				allMethods.addAll(Arrays.asList(superTypeMethods));	
+			}
 		}
-		return (IMethod[]) allMethods.toArray();
+		return allMethods.toArray(new IMethod[allMethods.size()]);
 	}
 	
 	private void initDirectSuperInterfaces() {
