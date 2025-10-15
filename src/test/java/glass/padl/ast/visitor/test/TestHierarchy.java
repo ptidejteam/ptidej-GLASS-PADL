@@ -1,8 +1,9 @@
 package glass.padl.ast.visitor.test;
 
-import java.util.Collection;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Collection;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,7 +13,7 @@ import glass.ast.IType;
 import glass.padl.ast.PADLProject;
 
 public class TestHierarchy{
-	
+
 	private static PADLProject project;
 	private static IType[] typeArray;
 	private static final String[] classNames = {"IOtherInterface", "IRoot", "ISubInterface",

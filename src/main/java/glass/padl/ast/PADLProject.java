@@ -35,8 +35,8 @@ public class PADLProject implements IProject{
 		//this.model = ModelGenerator.generateModelFromJavaFilesDirectoryUsingEclipse(filePath);
 		//this.model = ModelGenerator.generateModelFromJavaFilesDirectoriesUsingEclipse(filePath);
 		
-		this.model = ModelGenerator.generateModelFromClassFilesDirectory("", filePath);
-		
+		this.model = ModelGenerator.generateModelFromClassFilesDirectory(filePath);
+
 		/*
 		Use this in case of emergency only
 		ICodeLevelModel clm = Factory.getInstance().createCodeLevelModel("");
@@ -86,7 +86,7 @@ public class PADLProject implements IProject{
 			File[] listOfFiles = folder.listFiles();
 			String[] filePaths = new String[listOfFiles.length];
 			for (int i=0; i<listOfFiles.length; i++) {
-				filePaths[i] = filePath + "\\" + listOfFiles[i].getName();
+				filePaths[i] = filePath + "/" + listOfFiles[i].getName();
 				System.out.println(filePaths[i]);
 			}
 			this.model = ModelGenerator.generateModelFromClassFilesDirectories("", filePaths);

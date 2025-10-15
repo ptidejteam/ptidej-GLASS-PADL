@@ -44,6 +44,7 @@ public class TestSimpleClass{
 		assertEquals("compute", firstMethod.getElementName());
 		assertEquals("void", firstMethod.getReturnType());
 		assertEquals("void compute(int, java.lang.String)", firstMethod.getSignature());
+		assertEquals("glass.example.ast.SimpleClass.SimpleClass void compute(int, java.lang.String)", firstMethod.getFullSignature());
 		assertFalse(firstMethod.isPublic());
 		assertFalse(firstMethod.isConstructor());
 		assertFalse(firstMethod.isSimilar(methods[1]));
@@ -54,5 +55,4 @@ public class TestSimpleClass{
 		assertEquals("java.lang.String", paramNames[1]);
 		 
 	}
-
 }

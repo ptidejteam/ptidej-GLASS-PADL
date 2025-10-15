@@ -15,6 +15,8 @@ public class PADLMethod implements IMethod{
 	private int nbParameters = 0;
 	
 	
+	// TODO : fix all the signature methods
+	
 	public PADLMethod(padl.kernel.IMethod padlMethod) {
 		this.padlMethod = padlMethod;
 		this.signature = createSignature();
@@ -89,6 +91,22 @@ public class PADLMethod implements IMethod{
 		return signature.toString();
 	}
 
+	@Override
+	public String getFullSignature() {
+		StringBuffer fullSignature = new StringBuffer();
+		fullSignature.append(this.extractFullClassName());
+		fullSignature.append(" ");
+		fullSignature.append(this.getSimpleSignature());
+		return fullSignature.toString();
+	}
+	
+	private String extractFullClassName() {
+		String[] displayPath = this.padlMethod.getDisplayPath().split("\\|");
+		String fullClassName = displayPath[displayPath.length - 2];
+		return fullClassName;
+	}
+	
+	
 	@Override
 	public boolean isSimilar(IMethod comparedMethod) {
 		return this.getSignature().equals(comparedMethod.getSignature());

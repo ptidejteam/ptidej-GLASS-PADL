@@ -6,6 +6,7 @@
   <artifactId>glass-padl</artifactId>
   <version>0.4</version>
   <name>GLASS PADL Model Extractor</name>
+  <url>http://maven.apache.org</url>
   
   
   <properties>
