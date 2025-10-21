@@ -36,7 +36,7 @@ public class PADLProject implements IProject{
 		//this.model = ModelGenerator.generateModelFromJavaFilesDirectoriesUsingEclipse(filePath);
 		
 		this.model = ModelGenerator.generateModelFromClassFilesDirectory(filePath);
-
+		
 		/*
 		Use this in case of emergency only
 		ICodeLevelModel clm = Factory.getInstance().createCodeLevelModel("");
@@ -82,13 +82,8 @@ public class PADLProject implements IProject{
 		this.ghostTypes = walker.getGhostTypes();
 		
 		if (this.definedTypes.size() == 0) {
-			File folder = new File(filePath);
-			File[] listOfFiles = folder.listFiles();
-			String[] filePaths = new String[listOfFiles.length];
-			for (int i=0; i<listOfFiles.length; i++) {
-				filePaths[i] = filePath + "/" + listOfFiles[i].getName();
-				System.out.println(filePaths[i]);
-			}
+			Collection<String> allFiles = this.getAllFilePaths(filePath);
+			String[] filePaths = allFiles.toArray(new String[allFiles.size()]);
 			this.model = ModelGenerator.generateModelFromClassFilesDirectories("", filePaths);
 			
 			final ASTVisitor walker2 = new ASTVisitor(this);
@@ -130,6 +125,19 @@ public class PADLProject implements IProject{
 	
 	public Collection<IType> getGhostTypes() {
 		return this.ghostTypes;
+	}
+	
+	private Collection<String> getAllFilePaths(String filePath) {
+		File dir = new File(filePath);
+		Collection<String> allFiles = new ArrayList<String>();
+		for (File file : dir.listFiles()) {
+			if (file.isDirectory()) {
+				allFiles.addAll(this.getAllFilePaths(file.getAbsolutePath()));
+			} else {
+				allFiles.add(file.getAbsolutePath());
+			}
+		}
+		return allFiles;
 	}
 
 }

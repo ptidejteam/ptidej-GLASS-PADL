@@ -18,8 +18,11 @@ import glass.lattice.builder.LatticeBuilder;
 import glass.lattice.model.ILattice;
 import glass.lattice.model.IRelation;
 import glass.lattice.model.IRelationBuilder;
+import glass.lattice.model.impl.ExtendedRIRBuilder;
 import glass.lattice.model.impl.ReverseInheritanceRelationBuilder;
 import glass.lattice.model.impl.UsualRelationBuilder;
+import glass.lattice.visitor.impl.AdhocFeatureDetectorVisitor;
+import glass.lattice.visitor.impl.AdhocValidationVisitor;
 import glass.lattice.visitor.impl.ComplexPurgeExtentsVisitor;
 import glass.lattice.visitor.impl.FeatureDetectorVisitor;
 import glass.lattice.visitor.impl.InheritanceBuilderVisitor;
@@ -46,9 +49,10 @@ public class Main
     	// TO-DO: create test within this project
     	
     	
-        String filePath_test = "../../eclipse-workspace/testFeature2/bin/";
+        //String filePath_test = "../../eclipse-workspace/testFeature2/bin/";
+    	String filePath_padl = "../ptidej-Ptidej/PADL/target/classes/";
         String projectName = "aa";
-        IProject project = new PADLProject(filePath_test);
+        IProject project = new PADLProject(filePath_padl);
         
         /*
         IRelationBuilder relationBuilder = new UsualRelationBuilder();
@@ -65,8 +69,7 @@ public class Main
 		lattice.acceptTopVisitor(printer);
 		*/
 
-        
-		IRelationBuilder relationBuilder = new ReverseInheritanceRelationBuilder();
+		IRelationBuilder relationBuilder = new ExtendedRIRBuilder();
 		IRelation relation = relationBuilder.buildRelationFrom(project);
 		//System.out.println("Done building relation!");
 		
@@ -77,47 +80,53 @@ public class Main
 		ILattice lattice = latticeBuilder.buildLattice(relation);
 		System.out.println("Done building lattice!");
 		
-		LatticePrettyPrinter printer = LatticePrettyPrinter.javaElementsLatticePrettyPrinter();
-		lattice.acceptTopVisitor(printer);
-
-		System.out.println("Done printing lattice!");
+		System.out.println("Creating inheritance lattice");
+		InheritanceBuilderVisitor inheritanceLatticeVisitor = new InheritanceBuilderVisitor(lattice);
+		lattice.acceptTopVisitor(inheritanceLatticeVisitor);
+		ILattice inheritanceLattice = inheritanceLatticeVisitor.getInheritanceLattice();
 		
-		LatticePrinterGraphviz lpg = new LatticePrinterGraphviz("test");
+		IVisitor adhocValidation = new AdhocValidationVisitor();
+		inheritanceLattice.acceptTopVisitor(adhocValidation);
+		
+		LatticePrinterGraphviz lpg = new LatticePrinterGraphviz("test", false);
 		System.out.println("Creating visualization");
 		lattice.acceptTopVisitor(lpg);
 		lpg.processResults();
 		System.out.println("Done!");
 		
-		System.out.println("Creating inheritance lattice");
-		InheritanceBuilderVisitor inheritanceLatticeVisitor = new InheritanceBuilderVisitor(lattice);
-		lattice.acceptTopVisitor(inheritanceLatticeVisitor);
-		ILattice inheritanceLattice = inheritanceLatticeVisitor.getInheritanceLattice();
-		LatticePrinterGraphviz lpg2 = new LatticePrinterGraphviz("testInheritance");
+		System.out.println("Creating visualization for inheritance lattice");
+		LatticePrinterGraphviz lpg2 = new LatticePrinterGraphviz("testInheritance", false);
 		inheritanceLattice.acceptTopVisitor(lpg2);
 		lpg2.processResults();
 		System.out.println("Visualization ready!");
 
 		//System.out.println("Using complex purge");
-		IVisitor purgeVisitor = new ComplexPurgeExtentsVisitor((ReverseInheritanceRelationBuilder) relationBuilder);
+		IVisitor purgeVisitor = new ComplexPurgeExtentsVisitor((ExtendedRIRBuilder) relationBuilder);
 		lattice.acceptTopVisitor(purgeVisitor);
-		printer.reset();
 		//System.out.println("Printing lattice after purging extents");
 		//lattice.acceptTopVisitor(printer);
 		//System.out.println("Done printing lattice!");
 		
 		
 		// 6.2 Second, extract candidate features
-		FeatureDetectorVisitor featureDetector = new FeatureDetectorVisitor((ReverseInheritanceRelationBuilder) relationBuilder);
+		AdhocFeatureDetectorVisitor featureDetector = new AdhocFeatureDetectorVisitor(lattice);
 		lattice.acceptTopVisitor(featureDetector);
+		
+		ILattice featureSemiLattice = featureDetector.getFeatureSemiLattice();
+		System.out.println("Creating visualization for adhoc features");
+		LatticePrinterGraphviz lpg3 = new LatticePrinterGraphviz("testFeature", true);
+		featureSemiLattice.acceptTopVisitor(lpg3);
+		lpg3.processResults();
+		System.out.println("Visualization ready!");
 
-
+		/*
 		// 6.3 Third, print candidate feature nodes
 		PrintCandidatesVisitor printCandidatesVisitor = new PrintCandidatesVisitor(
 				featureDetector.getCandidateFeatureNodes());
 		System.out.println("Printing candidate nodes");
 		lattice.acceptTopVisitor(printCandidatesVisitor);
 		System.out.println("Done printing candidate nodes!");
-		
+		*/
 		
 		/*
 		FileOutputStream fos;
