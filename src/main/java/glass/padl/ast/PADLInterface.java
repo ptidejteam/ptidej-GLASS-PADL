@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import glass.ast.IMethod;
 import glass.ast.IType;
@@ -182,6 +183,12 @@ public class PADLInterface extends PADLType{
 		} else {
 			this.addToArray(this.directImplClasses, subType);
 		}
+	}
+	
+	@Override
+	public IType[] getDirectSubTypes() {
+		return Stream.concat(Arrays.stream(this.directImplClasses), Arrays.stream(this.directSubInterfaces))
+				.toArray(IType[]::new);
 	}
 
 }

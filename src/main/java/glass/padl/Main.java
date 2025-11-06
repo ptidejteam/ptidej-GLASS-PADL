@@ -45,14 +45,12 @@ public class Main
 			e.printStackTrace();
 		}
 		*/
-		
-    	// TO-DO: create test within this project
     	
     	
-        //String filePath_test = "../../eclipse-workspace/testFeature2/bin/";
+        String filePath_test = "../../eclipse-workspace/testFeature2/bin/";
     	String filePath_padl = "../ptidej-Ptidej/PADL/target/classes/";
-        String projectName = "aa";
-        IProject project = new PADLProject(filePath_padl);
+        String projectName = "";
+        IProject project = new PADLProject(filePath_test);
         
         /*
         IRelationBuilder relationBuilder = new UsualRelationBuilder();
@@ -72,7 +70,6 @@ public class Main
 		IRelationBuilder relationBuilder = new ExtendedRIRBuilder();
 		IRelation relation = relationBuilder.buildRelationFrom(project);
 		//System.out.println("Done building relation!");
-		
 		//System.out.println("Printing the relation");
 		//System.out.println(relation.printString());
 		

@@ -159,4 +159,9 @@ public class PADLClass extends PADLType{
 		this.addToArray(this.directSubClasses, subType);
 	}
 	
+	@Override
+	public IType[] getDirectSubTypes() {
+		return this.directSubClasses;
+	}
+	
 }
