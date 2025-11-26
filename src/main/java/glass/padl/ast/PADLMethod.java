@@ -155,4 +155,12 @@ public class PADLMethod implements IMethod{
 		return this.padlMethod.isProtected();
 	}
 
+	@Override
+	public boolean equals(Object otherObj) {
+		if (!(otherObj instanceof PADLMethod)) {
+			return false;
+		}
+		PADLMethod otherMethod = (PADLMethod) otherObj;
+		return this.isSimilar(otherMethod);
+	}
 }

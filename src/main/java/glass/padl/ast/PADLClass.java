@@ -41,15 +41,23 @@ public class PADLClass extends PADLType{
 	public IMethod[] getMethods() {
 		Set<IMethod> allMethods = new HashSet<IMethod>();
 		allMethods.addAll(Arrays.asList(this.getLocalMethods()));
-		// we already get the methods from the super interfaces in the local methods
-		IType superClass = this.getSuperClass();
-		if (superClass != null) {
-			for (IMethod method : superClass.getMethods()) {
-				if ((method.isPublic() || method.isProtected()) && !method.isConstructor()) {
-					allMethods.add(method);
+		IType[] allSuperTypes = this.getAllSupertypes();
+		for (IType superType : allSuperTypes) {
+			if (superType.isInterface()) {
+				IMethod[] superTypeMethods = superType.getLocalMethods();
+				if (superTypeMethods != null) {
+					allMethods.addAll(Arrays.asList(superTypeMethods));	
+				}
+			}
+			else {
+				for (IMethod method : superType.getLocalMethods()) {
+					if ((method.isPublic() || method.isProtected()) && !method.isConstructor()) {
+						allMethods.add(method); // Our class doesn't inherit private methods and constructors
+					}
 				}
 			}
 		}
+		
 		return allMethods.toArray(new IMethod[allMethods.size()]);
 	}
 	
@@ -125,7 +133,7 @@ public class PADLClass extends PADLType{
 	}
 
 	public IType[] getDirectSuperTypes() {
-		if (this.getSuperClass() == null) { // can be null because we don't consider ghost types
+		if (this.getSuperClass() == null) { // can be null depending on the behavior of PADLProject.findType
 			return this.directSuperInterfaces;
 		}
 		IType[] allSuperTypes = new IType[this.directSuperInterfaces.length+1];

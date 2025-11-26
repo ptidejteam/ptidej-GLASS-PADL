@@ -116,11 +116,18 @@ public class PADLProject implements IProject{
 
 	@Override
 	public IType findType(String typeName) {
-		// For now we don't consider ghost types
-		return definedTypes.stream()
+		IType result = null;
+		result = this.definedTypes.stream()
 				.filter(t -> t.getFullyQualifiedName().equals(typeName))
 				.findFirst()
 				.orElse(null);
+		if (result == null) {
+			return this.ghostTypes.stream()
+					.filter(t -> t.getFullyQualifiedName().equals(typeName))
+					.findFirst()
+					.orElse(null);
+		}
+		return result;
 	}
 	
 	public Collection<IType> getGhostTypes() {

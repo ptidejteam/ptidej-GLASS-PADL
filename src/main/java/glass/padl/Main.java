@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import glass.ast.IMethod;
@@ -16,6 +18,7 @@ import glass.ast.IType;
 import glass.lattice.builder.ILatticeBuilder;
 import glass.lattice.builder.LatticeBuilder;
 import glass.lattice.model.ILattice;
+import glass.lattice.model.ILatticeNode;
 import glass.lattice.model.IRelation;
 import glass.lattice.model.IRelationBuilder;
 import glass.lattice.model.impl.ExtendedRIRBuilder;
@@ -46,11 +49,10 @@ public class Main
 		}
 		*/
     	
-    	
-        String filePath_test = "../../eclipse-workspace/testFeature2/bin/";
+        String filePath_test = "../../eclipse-workspace/testIssue2/bin/";
     	String filePath_padl = "../ptidej-Ptidej/PADL/target/classes/";
         String projectName = "";
-        IProject project = new PADLProject(filePath_test);
+        IProject project = new PADLProject(filePath_padl);
         
         /*
         IRelationBuilder relationBuilder = new UsualRelationBuilder();
@@ -81,6 +83,7 @@ public class Main
 		InheritanceBuilderVisitor inheritanceLatticeVisitor = new InheritanceBuilderVisitor(lattice);
 		lattice.acceptTopVisitor(inheritanceLatticeVisitor);
 		ILattice inheritanceLattice = inheritanceLatticeVisitor.getInheritanceLattice();
+		Map<ILatticeNode, ILatticeNode> originalToSimplified = inheritanceLatticeVisitor.getOriginalToCloneMapping();
 		
 		IVisitor adhocValidation = new AdhocValidationVisitor();
 		inheritanceLattice.acceptTopVisitor(adhocValidation);
@@ -98,7 +101,7 @@ public class Main
 		System.out.println("Visualization ready!");
 
 		//System.out.println("Using complex purge");
-		IVisitor purgeVisitor = new ComplexPurgeExtentsVisitor((ExtendedRIRBuilder) relationBuilder);
+		IVisitor purgeVisitor = new ComplexPurgeExtentsVisitor((ExtendedRIRBuilder) relationBuilder, originalToSimplified);
 		lattice.acceptTopVisitor(purgeVisitor);
 		//System.out.println("Printing lattice after purging extents");
 		//lattice.acceptTopVisitor(printer);
@@ -106,7 +109,7 @@ public class Main
 		
 		
 		// 6.2 Second, extract candidate features
-		AdhocFeatureDetectorVisitor featureDetector = new AdhocFeatureDetectorVisitor(lattice);
+		AdhocFeatureDetectorVisitor featureDetector = new AdhocFeatureDetectorVisitor(lattice, originalToSimplified);
 		lattice.acceptTopVisitor(featureDetector);
 		
 		ILattice featureSemiLattice = featureDetector.getFeatureSemiLattice();
