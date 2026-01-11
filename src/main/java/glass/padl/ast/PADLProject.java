@@ -120,7 +120,7 @@ public class PADLProject implements IProject{
 		result = this.definedTypes.stream()
 				.filter(t -> t.getFullyQualifiedName().equals(typeName))
 				.findFirst()
-				.orElse(null);
+				.orElse(null);	
 		if (result == null) {
 			return this.ghostTypes.stream()
 					.filter(t -> t.getFullyQualifiedName().equals(typeName))

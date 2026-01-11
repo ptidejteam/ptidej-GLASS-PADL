@@ -49,7 +49,7 @@ public class Main
 		}
 		*/
     	
-        String filePath_test = "../../eclipse-workspace/testIssue2/bin/";
+        String filePath_test = "../../eclipse-workspace/TestIssue2/bin/";
     	String filePath_padl = "../ptidej-Ptidej/PADL/target/classes/";
         String projectName = "";
         IProject project = new PADLProject(filePath_padl);
@@ -90,14 +90,14 @@ public class Main
 		
 		LatticePrinterGraphviz lpg = new LatticePrinterGraphviz("test", false);
 		System.out.println("Creating visualization");
-		lattice.acceptTopVisitor(lpg);
-		lpg.processResults();
+		//lattice.acceptTopVisitor(lpg);
+		//lpg.processResults();
 		System.out.println("Done!");
 		
 		System.out.println("Creating visualization for inheritance lattice");
 		LatticePrinterGraphviz lpg2 = new LatticePrinterGraphviz("testInheritance", false);
-		inheritanceLattice.acceptTopVisitor(lpg2);
-		lpg2.processResults();
+		//inheritanceLattice.acceptTopVisitor(lpg2);
+		//lpg2.processResults();
 		System.out.println("Visualization ready!");
 
 		//System.out.println("Using complex purge");
@@ -116,7 +116,7 @@ public class Main
 		System.out.println("Creating visualization for adhoc features");
 		LatticePrinterGraphviz lpg3 = new LatticePrinterGraphviz("testFeature", true);
 		featureSemiLattice.acceptTopVisitor(lpg3);
-		lpg3.processResults();
+		lpg3.processResultsFeature();
 		System.out.println("Visualization ready!");
 
 		/*

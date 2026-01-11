@@ -76,7 +76,6 @@ public class ASTVisitor implements IWalker {
 	private void addMethod(IMethod method) {
 		PADLType currentType = this.typeStack.lastElement();
 		method.setStatic(false);
-		System.out.println(method.getDisplayPath());
 		currentType.addMethod(new PADLMethod(method));
 	}
 	

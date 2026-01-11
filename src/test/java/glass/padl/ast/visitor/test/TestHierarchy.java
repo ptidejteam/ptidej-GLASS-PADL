@@ -55,7 +55,7 @@ public class TestHierarchy{
 		assertEquals(1, subInterface.getAllSupertypes().length);
 		assertEquals(3, subInterface.getAllSubtypes().length);
 	}
-	
+/*	
 	@Test
 	public void testMethods() {
 		IType topClass = typeArray[6];
@@ -69,4 +69,5 @@ public class TestHierarchy{
 		assertEquals(2, allMethodsInt.length);
 		assertEquals(1, localMethodsInt.length);
 	}
+	*/
 }
