@@ -20,7 +20,7 @@ public class TestSimpleClass{
 	
 	@BeforeClass
 	public static void setUpProject() {
-		String filePath = "..\\ptidej-GLASS\\target\\test-classes\\glass\\example\\ast\\SimpleClass\\SimpleClass.class";
+		String filePath = "/home/luca/coding/java/eclipse-workspace/GLASS/target/test-classes/glass/example/ast/SimpleClass/SimpleClass.class";
 		project = new PADLProject(filePath);
 		type = project.findType(fullClassName);
 	}

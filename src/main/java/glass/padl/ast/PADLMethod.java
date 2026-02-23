@@ -6,7 +6,8 @@ import glass.ast.IMethod;
 import padl.kernel.IEntity;
 import padl.kernel.IParameter;
 import padl.kernel.exception.ModelDeclarationException;
-import util.lang.Modifier;
+//import util.lang.Modifier;
+import com.ibm.toad.cfparse.utils.Access;
 
 public class PADLMethod implements IMethod{
 	
@@ -25,7 +26,8 @@ public class PADLMethod implements IMethod{
 	private String createSignature() {
 		this.nbParameters = 0;
 		StringBuffer signature = new StringBuffer();
-		signature.append(Modifier.toString(this.padlMethod.getVisibility()));
+		//signature.append(Modifier.toString(this.padlMethod.getVisibility()));
+		signature.append(Access.getAsString(this.padlMethod.getVisibility()));
 		if (this.padlMethod.getVisibility() != 0) {
 			signature.append(' ');
 		}
@@ -53,7 +55,7 @@ public class PADLMethod implements IMethod{
 		buffer.append(parameter.getTypeName());
 		if (parameter.getCardinality() == 2) {
 			try {
-				int dimension = parameter.getDimension();
+				int dimension = parameter.getCardinality();
 				for (int i = 1; i < dimension; i++) {
 					buffer.append("[]");
 				}

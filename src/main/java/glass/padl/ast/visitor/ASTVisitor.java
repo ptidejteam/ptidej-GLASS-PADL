@@ -36,6 +36,7 @@ import padl.kernel.IMethodInvocation;
 import padl.kernel.IOperation;
 import padl.kernel.IPackage;
 import padl.kernel.IPackageDefault;
+import padl.kernel.IPackageGhost;
 import padl.kernel.IParameter;
 import padl.kernel.IPrimitiveEntity;
 import padl.kernel.ISetter;
@@ -288,6 +289,18 @@ public class ASTVisitor implements IWalker {
 	
 	public Collection<IType> getGhostTypes() {
 		return ghostTypes;
+	}
+
+	@Override
+	public void close(IPackageGhost aPackageGhost) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void open(IPackageGhost aPackageGhost) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 

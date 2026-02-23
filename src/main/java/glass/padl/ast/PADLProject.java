@@ -32,13 +32,15 @@ public class PADLProject implements IProject{
 	
 	public PADLProject(String filePath) {
 		
-		//this.model = ModelGenerator.generateModelFromJavaFilesDirectoryUsingEclipse(filePath);
-		//this.model = ModelGenerator.generateModelFromJavaFilesDirectoriesUsingEclipse(filePath);
+		// this.model = ModelGenerator.generateModelFromJavaFilesDirectoryUsingEclipse(filePath);
+		// this.model = ModelGenerator.generateModelFromJavaFilesDirectoriesUsingEclipse(filePath);
+		//String[] someSources = {filePath};
+		//this.model = ModelGenerator.generateModelFromJavaFilesDirectoryUsingJavaC(filePath, someSources);
 		
 		this.model = ModelGenerator.generateModelFromClassFilesDirectory(filePath);
 		
 		/*
-		Use this in case of emergency only
+		//Use this in case of emergency only
 		ICodeLevelModel clm = Factory.getInstance().createCodeLevelModel("");
 		try {
 			clm.create(new CompleteClassFileCreator(
@@ -57,6 +59,7 @@ public class PADLProject implements IProject{
 			e.printStackTrace();
 		}
 		*/
+		
 		this.definedTypes = new ArrayList<IType>();
 		this.ghostTypes = new ArrayList<IType>();
 		
@@ -92,6 +95,7 @@ public class PADLProject implements IProject{
 			this.definedTypes = walker2.getDefinedTypes();
 			this.ghostTypes = walker2.getGhostTypes();
 		}
+		
 		this.initTypes();
 	}
 	

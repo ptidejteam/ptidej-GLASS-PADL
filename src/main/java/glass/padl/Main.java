@@ -17,6 +17,9 @@ import glass.ast.IProject;
 import glass.ast.IType;
 import glass.lattice.builder.ILatticeBuilder;
 import glass.lattice.builder.LatticeBuilder;
+import glass.lattice.metrics.IMetricCalculator;
+import glass.lattice.metrics.impl.ProximityMetric;
+import glass.lattice.metrics.impl.RatioMetric;
 import glass.lattice.model.ILattice;
 import glass.lattice.model.ILatticeNode;
 import glass.lattice.model.IRelation;
@@ -27,6 +30,7 @@ import glass.lattice.model.impl.UsualRelationBuilder;
 import glass.lattice.visitor.impl.AdhocFeatureDetectorVisitor;
 import glass.lattice.visitor.impl.AdhocValidationVisitor;
 import glass.lattice.visitor.impl.ComplexPurgeExtentsVisitor;
+import glass.lattice.visitor.impl.ConceptCounter;
 import glass.lattice.visitor.impl.FeatureDetectorVisitor;
 import glass.lattice.visitor.impl.InheritanceBuilderVisitor;
 import glass.lattice.visitor.impl.LatticePrettyPrinter;
@@ -49,12 +53,24 @@ public class Main
 		}
 		*/
     	
-        String filePath_test = "../../eclipse-workspace/TestIssue2/bin/";
-    	String filePath_padl = "../ptidej-Ptidej/PADL/target/classes/";
-        String projectName = "";
+        String filePath_test = "/home/luca/coding/java/eclipse-workspace/TestForGLASS/bin";
+    	String filePath_padl = "/home/luca/coding/java/ptidej/ptidej-Ptidej/PADL/target/classes/";
+    	String filePath_freemind = "/home/luca/coding/java/glass/featurediscovery/qualitativeEvaluation/data/input projects/FreeMind0.7.1/src/";
+    	String filePath_JHotDraw = "/home/luca/coding/java/glass/featurediscovery/qualitativeEvaluation/data/input projects/JHotDraw5.2/";
+    	String filePath_JReversePro = "/home/luca/coding/java/glass/featurediscovery/qualitativeEvaluation/data/input projects/JreversePro";
+    	String filePath_Lucene = "/home/luca/coding/java/glass/featurediscovery/qualitativeEvaluation/data/input projects/Lucene1.4/bin";
+    	String filePath_JavaWebMail = "/home/luca/coding/java/glass/featurediscovery/qualitativeEvaluation/data/input projects/javawebmail-0.7/bin";
+    	String filePath_JHD_5_1 = "/home/luca/coding/java/glass/JHotDraw-v5.1/bin";
+    	String filePath_JHD_7_5_1 = "/home/luca/coding/java/glass/jhotdraw7";
+    	String filePath_JHD_5_3 = "/home/luca/coding/java/glass/JHotDraw_5_3/JHotDraw/";
+    	String filePath_JHD_5_4b1 = "/home/luca/coding/java/glass/JHotDraw54b1";
+    	String filePath_JHD_5_4b2 = "/home/luca/coding/java/glass/jhotdraw54b2";
+    	String filePath_JHD_6_0b1 = "/home/luca/coding/java/glass/jhotdraw60b1";
+    	String testJava = "/home/luca/coding/java/ptidej/ptidej-Ptidej/PADL/src/";
+    	String projectName = "";
         IProject project = new PADLProject(filePath_padl);
         
-        /*
+        /*5.3
         IRelationBuilder relationBuilder = new UsualRelationBuilder();
         IRelation relation = relationBuilder.buildRelationFrom(project);
         System.out.println("Built relation!");
@@ -90,14 +106,14 @@ public class Main
 		
 		LatticePrinterGraphviz lpg = new LatticePrinterGraphviz("test", false);
 		System.out.println("Creating visualization");
-		//lattice.acceptTopVisitor(lpg);
-		//lpg.processResults();
+		lattice.acceptTopVisitor(lpg);
+		lpg.processResults();
 		System.out.println("Done!");
 		
 		System.out.println("Creating visualization for inheritance lattice");
 		LatticePrinterGraphviz lpg2 = new LatticePrinterGraphviz("testInheritance", false);
-		//inheritanceLattice.acceptTopVisitor(lpg2);
-		//lpg2.processResults();
+		inheritanceLattice.acceptTopVisitor(lpg2);
+		lpg2.processResults();
 		System.out.println("Visualization ready!");
 
 		//System.out.println("Using complex purge");
@@ -113,11 +129,20 @@ public class Main
 		lattice.acceptTopVisitor(featureDetector);
 		
 		ILattice featureSemiLattice = featureDetector.getFeatureSemiLattice();
+		IMetricCalculator metricCalculator = new ProximityMetric();
+		featureSemiLattice.acceptTopVisitor(metricCalculator);
 		System.out.println("Creating visualization for adhoc features");
 		LatticePrinterGraphviz lpg3 = new LatticePrinterGraphviz("testFeature", true);
 		featureSemiLattice.acceptTopVisitor(lpg3);
 		lpg3.processResultsFeature();
 		System.out.println("Visualization ready!");
+		
+		ConceptCounter counter = new ConceptCounter();
+		featureSemiLattice.acceptTopVisitor(counter);
+		System.out.println("Number of adhoc features: " + counter.getCount());
+		System.out.println("Number of classes: " + project.getDefinedTypes().size());
+		float ratio = ((float)counter.getCount())/project.getDefinedTypes().size();
+		System.out.println("Adhoc features per classes: " + ratio);
 
 		/*
 		// 6.3 Third, print candidate feature nodes

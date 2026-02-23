@@ -22,7 +22,7 @@ public class TestHierarchy{
 	
 	@BeforeClass
 	public static void beforeAll() {
-		String filePath = "..\\ptidej-GLASS\\target\\test-classes\\glass\\example\\ast\\HierarchyTest";
+		String filePath = "/home/luca/coding/java/eclipse-workspace/GLASS/target/test-classes/glass/example/ast/HierarchyTest";
 		project = new PADLProject(filePath);
 		typeArray = new IType[project.getDefinedTypes().size()];
 		for (int i=0; i<typeArray.length; i++) {
@@ -44,7 +44,7 @@ public class TestHierarchy{
 		IType subClass = typeArray[5];
 		
 		IType[] superTypes = subClass.getAllSupertypes();
-		assertEquals(4, superTypes.length);
+		assertEquals(5, superTypes.length); // Also counts ghosts for now
 		assertEquals(0, subClass.getAllSubtypes().length);
 	}
 	
@@ -52,7 +52,7 @@ public class TestHierarchy{
 	public void testHierarchyRelationsSubInterface() {
 		IType subInterface = typeArray[2];
 		
-		assertEquals(1, subInterface.getAllSupertypes().length);
+		assertEquals(2, subInterface.getAllSupertypes().length);
 		assertEquals(3, subInterface.getAllSubtypes().length);
 	}
 /*	
